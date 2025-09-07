@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Events - Student App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Campus Events">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-calendar-alt"></i> Campus Events</h1>
+                <button class="profile-btn" onclick="showProfile()">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="showSection('events')">
+                <i class="fas fa-calendar"></i>
+                <span>Events</span>
+            </button>
+            <button class="nav-item" onclick="showSection('my-events')">
+                <i class="fas fa-ticket-alt"></i>
+                <span>My Events</span>
+            </button>
+            <button class="nav-item" onclick="showSection('checkin')">
+                <i class="fas fa-qrcode"></i>
+                <span>Check-in</span>
+            </button>
+        </nav>
+
+        <!-- Events Section -->
+        <div id="events-section" class="section active">
+            <div class="section-header">
+                <h2>Upcoming Events</h2>
+                <div class="filter-controls">
+                    <select id="eventTypeFilter" onchange="filterEvents()">
+                        <option value="">All Types</option>
+                        <option value="hackathon">Hackathon</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="tech_talk">Tech Talk</option>
+                        <option value="fest">Festival</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="events-list" id="eventsList">
+                <!-- Events will be loaded here -->
+            </div>
+        </div>
+
+        <!-- My Events Section -->
+        <div id="my-events-section" class="section">
+            <div class="section-header">
+                <h2>My Registrations</h2>
+            </div>
+
+            <div class="my-events-list" id="myEventsList">
+                <!-- User's events will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Check-in Section -->
+        <div id="checkin-section" class="section">
+            <div class="section-header">
+                <h2>Event Check-in</h2>
+            </div>
+
+            <div class="checkin-form">
+                <form onsubmit="performCheckin(event)">
+                    <div class="form-group">
+                        <label for="checkinEventSelect">Select Event</label>
+                        <select id="checkinEventSelect" required>
+                            <option value="">Choose an event...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Your Email</label>
+                        <input type="email" id="studentEmail" required placeholder="Enter your email">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-check"></i> Check In
+                    </button>
+                </form>
+            </div>
+
+            <div class="checkin-status" id="checkinStatus" style="display: none;">
+                <!-- Check-in status will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle"></h3>
+                <span class="close" onclick="closeEventModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="eventModalBody">
+                <!-- Event details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEventModal()">Close</button>
+                <button class="btn btn-primary" id="registerBtn" onclick="registerForEvent()">
+                    <i class="fas fa-ticket-alt"></i> Register
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Register for Event</h3>
+                <span class="close" onclick="closeRegistrationModal()">&times;</span>
+            </div>
+            <form id="registrationForm" onsubmit="submitRegistration(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="studentName">Full Name</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmailReg">Email</label>
+                        <input type="email" id="studentEmailReg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentPhone">Phone Number</label>
+                        <input type="tel" id="studentPhone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeRegistrationModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Student Profile</h3>
+                <span class="close" onclick="closeProfileModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-details">
+                        <h4 id="profileName">Student Name</h4>
+                        <p id="profileEmail">student@email.com</p>
+                        <p id="profilePhone">+1234567890</p>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalRegistrations">0</span>
+                        <span class="stat-label">Events Registered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalAttended">0</span>
+                        <span class="stat-label">Events Attended</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-full" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="../error-handler.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

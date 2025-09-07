@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Event Management - Admin Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-calendar-alt"></i> Campus Event Management</h1>
+                <div class="admin-info">
+                    <span>Admin Portal</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('events')">
+                <i class="fas fa-calendar"></i> Events
+            </button>
+            <button class="tab-btn" onclick="showTab('registrations')">
+                <i class="fas fa-users"></i> Registrations
+            </button>
+            <button class="tab-btn" onclick="showTab('analytics')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </button>
+        </nav>
+
+        <!-- Events Tab -->
+        <div id="events-tab" class="tab-content active">
+            <div class="section-header">
+                <h2>Event Management</h2>
+                <button class="btn btn-primary" onclick="openEventModal()">
+                    <i class="fas fa-plus"></i> Create Event
+                </button>
+            </div>
+
+            <div class="events-grid" id="eventsGrid">
+                <!-- Events will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Registrations Tab -->
+        <div id="registrations-tab" class="tab-content">
+            <div class="section-header">
+                <h2>Event Registrations</h2>
+                <select id="eventFilter" onchange="filterRegistrations()">
+                    <option value="">All Events</option>
+                </select>
+            </div>
+
+            <div class="registrations-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Check-in Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationsTableBody">
+                        <!-- Registrations will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="section-header">
+                <h2>Event Analytics</h2>
+            </div>
+
+            <div class="analytics-grid" id="analyticsGrid">
+                <!-- Analytics will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Event</h3>
+                <span class="close" onclick="closeEventModal()">&times;</span>
+            </div>
+            <form id="eventForm" onsubmit="saveEvent(event)">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" rows="4"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time</label>
+                        <input type="time" id="eventTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventType">Event Type</label>
+                        <select id="eventType" required>
+                            <option value="">Select Type</option>
+                            <option value="hackathon">Hackathon</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="tech_talk">Tech Talk</option>
+                            <option value="fest">Fest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxParticipants">Max Participants</label>
+                        <input type="number" id="maxParticipants" min="1" value="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventImage">Image URL</label>
+                    <input type="url" id="eventImage">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEventModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Check-in Modal -->
+    <div id="checkinModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Check-in Student</h3>
+                <span class="close" onclick="closeCheckinModal()">&times;</span>
+            </div>
+            <form id="checkinForm" onsubmit="checkinStudentForm(event)">
+                <div class="form-group">
+                    <label for="checkinEvent">Event</label>
+                    <select id="checkinEvent" required>
+                        <option value="">Select Event</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="checkinEmail">Student Email</label>
+                    <input type="email" id="checkinEmail" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCheckinModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Check-in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../error-handler.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
